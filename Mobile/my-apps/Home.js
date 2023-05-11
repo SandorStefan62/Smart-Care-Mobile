@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import CitiriMedicale from './CitiriMedicale';
 import IstoricCitiri from './IstoricCitiri';
 import MessagePage from './MessagePage';
+import LoginPage from './LoginPage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createStackNavigator();
 
@@ -16,6 +19,7 @@ class HomePage extends Component {
         { key: 'Citiri medicale', component: CitiriMedicale },
         { key: 'Istoric citiri', component: IstoricCitiri },
         { key: 'Mesaje', component: MessagePage },
+        { key: 'Log Out', component: LoginPage }
       ],
     };
   }
@@ -25,7 +29,11 @@ class HomePage extends Component {
     return (
       <TouchableOpacity
         onPress={() => {
+          if (item.key === 'Log Out') {
+            this.handleLogOut();
+          }
           this.props.navigation.navigate(item.key);
+
         }}
       >
         <View style={styles.row}>
@@ -34,6 +42,12 @@ class HomePage extends Component {
       </TouchableOpacity>
     );
   };
+
+  //inca nu functioneaza loginu dupa ce te intorci la pagina
+  //idfk why
+  handleLogOut = async () => {
+    await AsyncStorage.clear();
+  }
 
   render() {
     return (
@@ -44,6 +58,10 @@ class HomePage extends Component {
   }
 }
 
+const headerOptions = {
+  headerShown: null
+}
+
 function App() {
   return (
     <Stack.Navigator>
@@ -52,9 +70,10 @@ function App() {
         component={HomePage}
         options={{ title: "Home", headerShown: false }}
       />
-      <Stack.Screen name="Citiri medicale" component={CitiriMedicale} />
-      <Stack.Screen name="Istoric citiri" component={IstoricCitiri} />
-      <Stack.Screen name="Mesaje" component={MessagePage} />
+      <Stack.Screen name="Citiri medicale" component={CitiriMedicale} options={headerOptions} />
+      <Stack.Screen name="Istoric citiri" component={IstoricCitiri} options={headerOptions} />
+      <Stack.Screen name="Mesaje" component={MessagePage} options={headerOptions} />
+      <Stack.Screen name="Log Out" component={LoginPage} options={headerOptions} />
     </Stack.Navigator>
   );
 }
