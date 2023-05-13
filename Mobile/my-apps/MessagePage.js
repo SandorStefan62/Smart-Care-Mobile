@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-function CitiriMedicalePage() {
+function MessagePage() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>This is the Istoric Citiri page</Text>
@@ -22,4 +22,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CitiriMedicalePage;
+export default MessagePage;

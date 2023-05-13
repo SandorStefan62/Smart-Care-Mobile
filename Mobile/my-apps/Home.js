@@ -1,97 +1,96 @@
-import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from 'react-native';
+import React, { useCallback } from 'react';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import CitiriMedicale from './CitiriMedicale';
-import IstoricCitiri from './IstoricCitiri';
 import MessagePage from './MessagePage';
 import LoginPage from './LoginPage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import IstoricCitiriPage from './IstoricCitiri';
+import CitiriMedicalePage from './CitiriMedicale';
 
 const Stack = createStackNavigator();
 
-class HomePage extends Component {
-  constructor(props) {
-    super(props);
+const HomePage = ({ navigation }) => {
+  const tableData = [
+    { key: 'Citiri medicale', component: CitiriMedicalePage },
+    { key: 'Istoric citiri', component: IstoricCitiriPage },
+    { key: 'Mesaje', component: MessagePage },
+    { key: 'Log Out', component: LoginPage }
+  ];
 
-    this.state = {
-      tableData: [
-        { key: 'Citiri medicale', component: CitiriMedicale },
-        { key: 'Istoric citiri', component: IstoricCitiri },
-        { key: 'Mesaje', component: MessagePage },
-        { key: 'Log Out', component: LoginPage }
-      ],
-    };
-  }
+  const logout = useCallback(async () => {
+    try {
+      // Remove JWT token from local storage
+      await AsyncStorage.removeItem('token');
+      // Navigate to login page
+      navigation.navigate('Login');
+    } catch (err) {
+      console.log(err);
+    }
+  }, [navigation]);
 
-  renderRow = ({ item }) => {
-    const Component = item.component;
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          if (item.key === 'Log Out') {
-            this.handleLogOut();
-          }
-          this.props.navigation.navigate(item.key);
-
-        }}
-      >
-        <View style={styles.row}>
-          <Text style={styles.rowText}>{item.key}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  //inca nu functioneaza loginu dupa ce te intorci la pagina
-  //idfk why
-  handleLogOut = async () => {
-    await AsyncStorage.clear();
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <FlatList data={this.state.tableData} renderItem={this.renderRow} />
-      </View>
-    );
-  }
-}
-
-const headerOptions = {
-  headerShown: null
-}
-
-function App() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="HomePage"
-        component={HomePage}
-        options={{ title: "Home", headerShown: false }}
-      />
-      <Stack.Screen name="Citiri medicale" component={CitiriMedicale} options={headerOptions} />
-      <Stack.Screen name="Istoric citiri" component={IstoricCitiri} options={headerOptions} />
-      <Stack.Screen name="Mesaje" component={MessagePage} options={headerOptions} />
-      <Stack.Screen name="Log Out" component={LoginPage} options={headerOptions} />
-    </Stack.Navigator>
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <FlatList
+          data={tableData}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                if (item.key === 'Log Out') {
+                  logout();
+                } else {
+                  navigation.navigate(item.component.name);
+                }
+              }}>
+              <Text style={styles.buttonText}>{item.key}</Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.key}
+          contentContainerStyle={styles.list}
+        />
+      </View>
+    </View>
   );
-}
+};
+
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1E1F28',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
+    backgroundColor: '#1E1F28',
   },
-  row: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    paddingVertical: 10,
+  button: {
+    backgroundColor: '#5C5EDD',
+    padding: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+    width: windowWidth - 40,
+    maxWidth: 400,
   },
-  rowText: {
-    fontSize: 18,
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  list: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
-export default App;
+export default HomePage;

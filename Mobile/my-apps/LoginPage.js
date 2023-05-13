@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 function LoginPage({ navigation }) {
   const [email, setEmail] = useState('');
@@ -9,7 +10,7 @@ function LoginPage({ navigation }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.102:3000/api/login', {
+      const response = await fetch('http://192.168.1.229:3000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -24,52 +25,36 @@ function LoginPage({ navigation }) {
         // Navigate to home page
         navigation.navigate('Home');
       } else if (response.status === 401) {
-        // Incorrect username or password
-        setError('Incorrect email or password');
+        setError('Email sau parola incorecta!');
       } else {
-        // Other error
-        setError('Something went wrong');
+        setError('A intervenit o eroare. Va rugam sa incercati din nou.');
       }
-    } catch (err) {
-      console.log(err)
+    } catch (error) {
+      console.error(error);
+      setError('A intervenit o eroare. Va rugam sa verificati conexiunea la internet.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.middleContainer}>
-        <View style={styles.header}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerText}>Smart-Care</Text>
-          </View>
-        </View>
-        <View style={styles.body}>
-          {/* <Text style={styles.title}>Login</Text> */}
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoCompleteType="email"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            autoCompleteType="password"
-          />
-          <View style={styles.buffer}></View>
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-          {/* {error && <Text style={styles.error}>{error}</Text>}
-          <Text>Don't have an saccount? <Text style={styles.link}>Sign up</Text></Text> */}
-        </View>
+      <Text style={styles.title}>Autentificare</Text>
+      <View style={styles.inputContainer}>
+        <MaterialCommunityIcons name="email-outline" size={24} color="#FFFFFF" />
+        <Text style={styles.label}>Email:</Text>
+        <TextInput style={styles.input} value={email} onChangeText={setEmail} autoCapitalize="none" />
       </View>
+      <View style={styles.inputContainer}>
+        <MaterialCommunityIcons name="lock-outline" size={24} color="#FFFFFF" />
+        <Text style={styles.label}>Parola:</Text>
+        <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry={true} />
+      </View>
+      {error && <Text style={styles.error}>{error}</Text>}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Autentificare</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Inregistrare')}>
+        <Text style={styles.buttonText}>Inregistrare</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -83,79 +68,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#0B2447'
-  },
-  middleContainer: {
-    height: windowHeight * 0.7,
-    width: windowWidth * 0.8,
-    borderRadius: 10,
-    backgroundColor: '#576CBC'
-  },
-  header: {
-    height: '15%',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    backgroundColor: '#19376D',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  headerContainer: {
-    height: '50%',
-    width: '92%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#A5D7E8'
-  },
-  headerText: {
-    fontFamily: 'Roboto',
-    fontWeight: 'bold',
-    fontSize: 24,
-    color: 'white'
-  },
-  body: {
-    flex: 1,
-    height: '85%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: 30
+    backgroundColor: '#1E1F28',
   },
   title: {
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#FFFFFF',
     marginBottom: 20,
   },
-  input: {
-    width: '80%',
+  inputContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#3C3F4D',
+    borderRadius: 10,
     padding: 10,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+    marginVertical: 5,
+    width: windowWidth - 40,
+    maxWidth: 400,
   },
-  buffer: {
-    height: '30%'
-  },
-  button: {
-    width: '50%',
-    backgroundColor: '#19376D',
-    padding: 10,
-    borderRadius: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    textAlign: 'center',
+  label: {
+    color: '#FFFFFF',
     fontWeight: 'bold',
-  },
-  error: {
-    color: 'red',
+    marginLeft: 10,
+    marginRight: 5,
+    flexShrink: 1,
+    },
+    input: {
+    flex: 1,
+    color: '#FFFFFF',
+    fontSize: 16,
+    marginLeft: 5,
+    },
+    button: {
+    backgroundColor: '#5C5EDD',
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    width: windowWidth - 40,
+    maxWidth: 400,
+    },
+    buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+    },
+    error: {
+    color: '#FF6347',
     marginTop: 10,
-  },
-  link: {
-    color: '#0084ff',
-  },
-});
-
-export default LoginPage;
+    textAlign: 'center',
+    },
+    });
+    
+    export default LoginPage;
