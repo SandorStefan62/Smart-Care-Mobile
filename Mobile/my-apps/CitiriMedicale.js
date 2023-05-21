@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native'; // import AsyncStorage
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-function CitiriMedicale({ onBack }) {
+function CitiriMedicale({ navigation }) {
   const [tensiune, setTensiune] = useState('');
   const [greutate, setGreutate] = useState('');
   const [temperatura, setTemperatura] = useState('');
@@ -12,18 +12,61 @@ function CitiriMedicale({ onBack }) {
 
   const handleSubmit = async () => {
     try {
-      const token = await AsyncStorage.getItem('token'); // use AsyncStorage instead of localStorage
+      // Validate the input data
+      if (!tensiune || !greutate || !temperatura || !glicemie) {
+        throw new Error('All fields are required');
+      }
+  
+      // Check if the tensiune field contains a slash ("/")
+      if (!tensiune.includes('/')) {
+        throw new Error('Invalid format for Tensiune. Use the format "120/80".');
+      }
+  
+      // Parse and validate greutate
+      const parsedGreutate = parseFloat(greutate);
+      if (isNaN(parsedGreutate)) {
+        throw new Error('Invalid value for Greutate. Please enter a numeric value.');
+      }
+  
+      // Parse and validate temperatura
+      const parsedTemperatura = parseFloat(temperatura);
+      if (isNaN(parsedTemperatura)) {
+        throw new Error('Invalid value for Temperatura. Please enter a numeric value.');
+      }
+  
+      // Parse and validate glicemie
+      const parsedGlicemie = parseFloat(glicemie);
+      if (isNaN(parsedGlicemie)) {
+        throw new Error('Invalid value for Glicemie. Please enter a numeric value.');
+      }
+  
+      // Get the current date and time
+      const currentDate = new Date();
+      const timestamp = currentDate.toISOString();
+  
+      const token = await AsyncStorage.getItem('token');
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const data = { tensiune, greutate, temperatura, glicemie };
-      const response = await axios.post('/api/medical-readings', data, config);
+      const data = {
+        tensiune: tensiune,
+        greutate: parsedGreutate,
+        temperatura: parsedTemperatura,
+        glicemie: parsedGlicemie,
+        timestamp: timestamp,
+      };
+      const response = await axios.post('http://192.168.1.229:3000/api/medical-readings', data, config);
       console.log('Success:', response);
       // You could also navigate to a different page or display a success message
     } catch (error) {
       console.error('Error:', error);
-      // You could display an error message to the user
+      // Display an error message to the user
+      Alert.alert('Error', error.message);
     }
+  };
+
+  const goBack = () => {
+    navigation.goBack();
   };
 
   return (
@@ -32,51 +75,77 @@ function CitiriMedicale({ onBack }) {
       <View style={styles.inputContainer}>
         <MaterialCommunityIcons name="heart-pulse" size={24} color="#FFFFFF" />
         <Text style={styles.label}>Tensiune:</Text>
-        <TextInput style={styles.input} value={tensiune} onChangeText={setTensiune} keyboardType="numeric" />
+        <TextInput
+          style={styles.input}
+          value={tensiune}
+          onChangeText={setTensiune}
+          keyboardType="default"
+          placeholder="e.g. 120/80"
+        />
       </View>
       <View style={styles.inputContainer}>
-        <MaterialCommunityIcons name="weight" size={24} color="#FFFFFF" />
+        <MaterialCommunityIcons name="weight-kilogram" size={24} color="#FFFFFF" />
         <Text style={styles.label}>Greutate:</Text>
-        <TextInput style={styles.input} value={greutate} onChangeText={setGreutate} keyboardType="numeric" />
+        <TextInput
+          style={styles.input}
+          value={greutate}
+          onChangeText={setGreutate}
+          keyboardType="decimal-pad"
+          placeholder="e.g. 75.5"
+        />
       </View>
       <View style={styles.inputContainer}>
         <MaterialCommunityIcons name="thermometer" size={24} color="#FFFFFF" />
         <Text style={styles.label}>Temperatura:</Text>
-        <TextInput style={styles.input} value={temperatura} onChangeText={setTemperatura} keyboardType="numeric" />
+        <TextInput
+          style={styles.input}
+          value={temperatura}
+          onChangeText={setTemperatura}
+          keyboardType="decimal-pad"
+          placeholder="e.g. 36.5"
+        />
       </View>
       <View style={styles.inputContainer}>
-        <MaterialCommunityIcons name="test-tube" size={24} color="#FFFFFF" />
+        <MaterialCommunityIcons name="blood-bag" size={24} color="#FFFFFF" />
         <Text style={styles.label}>Glicemie:</Text>
-        <TextInput style={styles.input} value={glicemie} onChangeText={setGlicemie} keyboardType="numeric" />
+        <TextInput
+          style={styles.input}
+          value={glicemie}
+          onChangeText={setGlicemie}
+          keyboardType="decimal-pad"
+          placeholder="e.g. 120"
+        />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Trimite</Text>
+        <Text style={styles.buttonText}>Adauga</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={onBack}>
+      <TouchableOpacity style={styles.button} onPress={goBack}>
         <Text style={styles.buttonText}>Inapoi</Text>
       </TouchableOpacity>
     </View>
   );
 }
 
-  const windowHeight = Dimensions.get("window").height;
-  const windowWidth = Dimensions.get("window").width;
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: 20,
-      backgroundColor: '#1E1F28',
-    },
-    title: {
+const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get('window').width;
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: '#1E1F28',
+  },
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#FFFFFF',
     marginBottom: 20,
-    },
-    inputContainer: {
+  },
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#3C3F4D',
@@ -85,34 +154,34 @@ function CitiriMedicale({ onBack }) {
     marginVertical: 5,
     width: windowWidth - 40,
     maxWidth: 400,
-    },
-    label: {
+  },
+  label: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     marginLeft: 10,
     flex: 1,
-    },
-    input: {
+  },
+  input: {
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
     padding: 5,
     flex: 1.5,
     height: 40,
     marginLeft: 10,
-    },
-    button: {
+  },
+  button: {
     backgroundColor: '#5C5EDD',
     borderRadius: 10,
     padding: 10,
     marginVertical: 5,
     width: windowWidth - 40,
     maxWidth: 400,
-    },
-    buttonText: {
+  },
+  buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     textAlign: 'center',
-    },
-    });
-    
-    export default CitiriMedicale;
+  },
+});
+
+export default CitiriMedicale;
