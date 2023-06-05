@@ -16,7 +16,7 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginPage} options={{ headerShown: null }} />
         <Stack.Screen name="Home" component={Home} options={{ headerShown: null }} />
         <Stack.Screen name="CitiriMedicale" component={CitiriMedicalePage} options={{ headerShown: null }} />
-        <Stack.Screen name="Message" component={MessagePage} options={{ headerShown: null }} />
+        <Stack.Screen name="MessagePage" component={MessagePage} options={{ headerShown: null }} />
         <Stack.Screen name="IstoricCitiri" component={IstoricCitiriPage} options={{ headerShown: null }} />
         {/* add other screens here */}
       </Stack.Navigator>

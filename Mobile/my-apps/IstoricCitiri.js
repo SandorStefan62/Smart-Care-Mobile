@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
 function IstoricCitiri() {
@@ -25,27 +25,21 @@ function IstoricCitiri() {
     }
   };
 
-  const parseTimestamp = (timestamp) => {
-    const [day, month, year, hours, minutes, seconds] = timestamp.match(/\d+/g);
-    return new Date(year, month - 1, day, hours, minutes, seconds);
-  };
-
   const formatTimestamp = (timestamp) => {
-    const day = timestamp.getDate().toString().padStart(2, '0');
-    const month = (timestamp.getMonth() + 1).toString().padStart(2, '0');
-    const year = timestamp.getFullYear().toString().slice(-2);
-    const time = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString().slice(-2);
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
   
-    return `${day}/${month}/${year}, ${time}`;
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
-
+  
+  
   const renderReadingItem = ({ item }) => {
-    console.log('Item timestamp:', item.timestamp);
-
-    const parsedTimestamp = parseTimestamp(item.timestamp);
-    const formattedTimestamp = formatTimestamp(parsedTimestamp);
-
-    console.log('Formatted timestamp:', formattedTimestamp);
+    const formattedTimestamp = formatTimestamp(item.timestamp);
 
     return (
       <TouchableOpacity style={styles.readingItem}>
