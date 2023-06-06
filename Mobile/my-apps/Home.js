@@ -18,7 +18,7 @@ const HomePage = ({ navigation }) => {
     { key: 'Log Out', component: LoginPage }
   ];
 
-  const logout = useCallback(async () => {
+  const logout = async () => {
     try {
       // Remove JWT token from local storage
       await AsyncStorage.removeItem('token');
@@ -27,7 +27,7 @@ const HomePage = ({ navigation }) => {
     } catch (err) {
       console.log(err);
     }
-  }, [navigation]);
+  };
 
   return (
     <View style={styles.wrapper}>

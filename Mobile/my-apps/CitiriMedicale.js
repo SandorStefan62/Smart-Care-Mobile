@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
@@ -9,53 +9,139 @@ function CitiriMedicale({ navigation }) {
   const [greutate, setGreutate] = useState('');
   const [temperatura, setTemperatura] = useState('');
   const [glicemie, setGlicemie] = useState('');
+  const [idColectiePacient, setIdColectiePacient] = useState('');
+  const [idPacient, setIdPacient] = useState('');
+  const [acc, setAcc] = useState('');
+  const [dateIngrijitor, setDateIngrijitor] = useState({});
+
+  // useEffect(() => {
+
+  // }, []);
+
+  const getIngrijitor = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await fetch("https://server-ip2023.herokuapp.com/api/get-ingrijitor", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      const data = await response.json();
+      console.log(data);
+      setDateIngrijitor(data.data);
+      setIdPacient(data.data.id_pacient);
+    } catch (error) {
+      console.error("eroare ingrijitor");
+    }
+  }
+
+  const verifyToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await fetch("https://server-ip2023.herokuapp.com/api/verifytoken", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (response.ok) {
+        console.log("OK");
+        const data = await response.json();
+        //console.log(data);
+        if (data.data.id_pacient) {
+          setIdPacient(data.data.id_pacient);
+          setAcc('Pacient');
+        } else {
+
+          setAcc('Ingrijitor');
+        }
+
+      } else {
+        console.log("NOK");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  verifyToken();
+
+  if (acc !== 'pacient') {
+    getIngrijitor();
+  }
+
+  const getIdColectie = async () => {
+    const token = await AsyncStorage.getItem('token');
+    try {
+      const response = await fetch(`https://server-ip2023.herokuapp.com/api/get-pacient-details/${idPacient}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      if (response.ok) {
+        console.log("OK");
+        const data = await response.json();
+        console.log(data);
+        setIdColectiePacient(data.data.id_colectie);
+      } else {
+        console.log("NOK");
+      }
+    } catch (error) {
+      console.error(error);
+      localStorage.removeItem("token");
+    }
+  }
+
+  getIdColectie();
 
   const handleSubmit = async () => {
+
     try {
       // Validate the input data
       if (!tensiune || !greutate || !temperatura || !glicemie) {
         throw new Error('All fields are required');
       }
-  
+
       // Check if the tensiune field contains a slash ("/")
-      if (!tensiune.includes('/')) {
-        throw new Error('Invalid format for Tensiune. Use the format "120/80".');
-      }
-  
+      // if (!tensiune.includes('/')) {
+      //   throw new Error('Invalid format for Tensiune. Use the format "120/80".');
+      // }
+
       // Parse and validate greutate
       const parsedGreutate = parseFloat(greutate);
       if (isNaN(parsedGreutate)) {
         throw new Error('Invalid value for Greutate. Please enter a numeric value.');
       }
-  
+
       // Parse and validate temperatura
       const parsedTemperatura = parseFloat(temperatura);
       if (isNaN(parsedTemperatura)) {
         throw new Error('Invalid value for Temperatura. Please enter a numeric value.');
       }
-  
+
       // Parse and validate glicemie
       const parsedGlicemie = parseFloat(glicemie);
       if (isNaN(parsedGlicemie)) {
         throw new Error('Invalid value for Glicemie. Please enter a numeric value.');
       }
-  
+
       // Get the current date and time
       const currentDate = new Date();
       const timestamp = currentDate.toISOString();
-  
       const token = await AsyncStorage.getItem('token');
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
       const data = {
-        tensiune: tensiune,
+        TA: tensiune,
         greutate: parsedGreutate,
-        temperatura: parsedTemperatura,
+        temp_corp: parsedTemperatura,
         glicemie: parsedGlicemie,
-        timestamp: timestamp,
+        //timestamp: timestamp,
       };
-      const response = await axios.post('http://192.168.1.229:3000/api/medical-readings', data, config);
+      const response = await axios.put(`https://server-ip2023.herokuapp.com/api/update-date-colectate/${idColectiePacient}`, data, config);
       console.log('Success:', response);
       // You could also navigate to a different page or display a success message
     } catch (error) {
@@ -63,6 +149,8 @@ function CitiriMedicale({ navigation }) {
       // Display an error message to the user
       Alert.alert('Error', error.message);
     }
+
+    navigation.goBack();
   };
 
   const goBack = () => {

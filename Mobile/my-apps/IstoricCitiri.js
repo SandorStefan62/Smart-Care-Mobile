@@ -12,7 +12,7 @@ function IstoricCitiri() {
 
   const fetchReadings = async () => {
     try {
-      const response = await axios.get('http://192.168.1.229:3000/api/medical-readings');
+      const response = await axios.get('http://192.168.1.102:3000/api/medical-readings');
       if (response.status === 200) {
         setReadings(response.data);
         setError(null);
@@ -33,11 +33,11 @@ function IstoricCitiri() {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-  
+
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
-  
-  
+
+
   const renderReadingItem = ({ item }) => {
     const formattedTimestamp = formatTimestamp(item.timestamp);
 

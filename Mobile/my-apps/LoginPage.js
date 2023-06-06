@@ -10,13 +10,15 @@ function LoginPage({ navigation }) {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch('http://192.168.1.229:3000/api/login', {
+      // console.log("da");
+      const response = await fetch(`https://server-ip2023.herokuapp.com/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
+      console.log("da1");
       const data = await response.json();
+      console.log(data);
       if (response.status === 200) {
         // Successful login
         setError(null);
@@ -92,32 +94,32 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 5,
     flexShrink: 1,
-    },
-    input: {
+  },
+  input: {
     flex: 1,
     color: '#FFFFFF',
     fontSize: 16,
     marginLeft: 5,
-    },
-    button: {
+  },
+  button: {
     backgroundColor: '#5C5EDD',
     padding: 10,
     borderRadius: 10,
     marginTop: 20,
     width: windowWidth - 40,
     maxWidth: 400,
-    },
-    buttonText: {
+  },
+  buttonText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 16,
-    },
-    error: {
+  },
+  error: {
     color: '#FF6347',
     marginTop: 10,
     textAlign: 'center',
-    },
-    });
-    
-    export default LoginPage;
+  },
+});
+
+export default LoginPage;
