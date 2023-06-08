@@ -28,7 +28,7 @@ function CitiriMedicale({ navigation }) {
         }
       })
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       setDateIngrijitor(data.data);
       setIdPacient(data.data.id_pacient);
     } catch (error) {
@@ -141,9 +141,19 @@ function CitiriMedicale({ navigation }) {
         glicemie: parsedGlicemie,
         //timestamp: timestamp,
       };
+      const localData = {
+        tensiune: tensiune,
+        greutate: parsedGlicemie,
+        temperatura: parsedTemperatura,
+        glicemie: parsedGlicemie,
+        timestamp: timestamp
+      }
       const response = await axios.put(`https://server-ip2023.herokuapp.com/api/update-date-colectate/${idColectiePacient}`, data, config);
+      const localResponse = await axios.post(`http://192.168.133.117:3000/api/medical-readings`, localData, config);
       console.log('Success:', response);
+      console.log('Success:', localResponse);
       // You could also navigate to a different page or display a success message
+
     } catch (error) {
       console.error('Error:', error);
       // Display an error message to the user

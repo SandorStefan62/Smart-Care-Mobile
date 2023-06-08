@@ -12,7 +12,7 @@ function IstoricCitiri() {
 
   const fetchReadings = async () => {
     try {
-      const response = await axios.get('http://192.168.1.102:3000/api/medical-readings');
+      const response = await axios.get('http://192.168.133.117:3000/api/medical-readings');
       if (response.status === 200) {
         setReadings(response.data);
         setError(null);

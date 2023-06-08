@@ -16,7 +16,7 @@ function LoginPage({ navigation }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      console.log("da1");
+      ///console.log("da1");
       const data = await response.json();
       console.log(data);
       if (response.status === 200) {

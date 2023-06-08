@@ -1,96 +1,99 @@
-// const express = require('express');
-// const sqlite3 = require('sqlite3').verbose();
-// const bodyParser = require('body-parser');
-// const dotenv = require('dotenv');
-// const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
 
-// const app = express();
-// dotenv.config();
+//!!-------DO NOT REMOVE COMMENTED CODE YET, MIGHT NEED IT LATER-------!!
 
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
+const express = require('express');
+const sqlite3 = require('sqlite3').verbose();
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-// const db = new sqlite3.Database('database-mobile.db');
+const app = express();
+dotenv.config();
 
-// db.serialize(() => {
-//   db.run(`
-//     CREATE TABLE IF NOT EXISTS users (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       email TEXT NOT NULL UNIQUE,
-//       password TEXT NOT NULL
-//     )
-//   `);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-//   db.get(`SELECT COUNT(*) AS count FROM users`, (err, row) => {
-//     if (err) {
-//       console.error('Failed to check user count:', err.message);
-//       return;
-//     }
+const db = new sqlite3.Database('database-mobile.db');
 
-//     if (row.count === 0) {
-//       const saltRounds = 10;
-//       const users = [
-//         { email: 'user1@example.com', password: 'password1' },
-//         { email: 'user2@example.com', password: 'password2' },
-//         { email: 'user3@example.com', password: 'password3' },
-//       ];
+db.serialize(() => {
+    //   db.run(`
+    //     CREATE TABLE IF NOT EXISTS users (
+    //       id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //       email TEXT NOT NULL UNIQUE,
+    //       password TEXT NOT NULL
+    //     )
+    //   `);
 
-//       const hashPasswords = async () => {
-//         for (const user of users) {
-//           try {
-//             const salt = await bcrypt.genSalt(saltRounds);
-//             const hashedPassword = await bcrypt.hash(user.password, salt);
-//             db.run(
-//               `INSERT INTO users (email, password) VALUES (?, ?)`,
-//               [user.email, hashedPassword],
-//               (err) => {
-//                 if (err) {
-//                   console.error('Failed to insert user:', err.message);
-//                 }
-//               }
-//             );
-//           } catch (err) {
-//             console.error('Failed to hash password:', err.message);
-//           }
-//         }
-//       };
+    //   db.get(`SELECT COUNT(*) AS count FROM users`, (err, row) => {
+    //     if (err) {
+    //       console.error('Failed to check user count:', err.message);
+    //       return;
+    //     }
 
-//       hashPasswords();
-//     }
-//   });
+    //     if (row.count === 0) {
+    //       const saltRounds = 10;
+    //       const users = [
+    //         { email: 'user1@example.com', password: 'password1' },
+    //         { email: 'user2@example.com', password: 'password2' },
+    //         { email: 'user3@example.com', password: 'password3' },
+    //       ];
 
-//   db.run(`
-//     CREATE TABLE IF NOT EXISTS medical_readings (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       tensiune TEXT NOT NULL,
-//       greutate REAL NOT NULL,
-//       temperatura REAL NOT NULL,
-//       glicemie REAL NOT NULL,
-//       timestamp TEXT NOT NULL
-//     )
-//   `);
+    //       const hashPasswords = async () => {
+    //         for (const user of users) {
+    //           try {
+    //             const salt = await bcrypt.genSalt(saltRounds);
+    //             const hashedPassword = await bcrypt.hash(user.password, salt);
+    //             db.run(
+    //               `INSERT INTO users (email, password) VALUES (?, ?)`,
+    //               [user.email, hashedPassword],
+    //               (err) => {
+    //                 if (err) {
+    //                   console.error('Failed to insert user:', err.message);
+    //                 }
+    //               }
+    //             );
+    //           } catch (err) {
+    //             console.error('Failed to hash password:', err.message);
+    //           }
+    //         }
+    //       };
 
-//   db.run(`
-//     CREATE TABLE IF NOT EXISTS conversations (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       title TEXT NOT NULL,
-//       createdAt TEXT NOT NULL
-//     )
-//   `);
+    //       hashPasswords();
+    //     }
+    //   });
 
-//   db.run(`
-//     CREATE TABLE IF NOT EXISTS messages (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       sender TEXT NOT NULL,
-//       recipient TEXT NOT NULL,
-//       content TEXT NOT NULL,
-//       timestamp TEXT NOT NULL,
-//       conversationId INTEGER NOT NULL,
-//       FOREIGN KEY (conversationId) REFERENCES conversations(id)
-//     )
-//   `);
-// });
+    db.run(`
+    CREATE TABLE IF NOT EXISTS medical_readings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tensiune TEXT NOT NULL,
+      greutate REAL NOT NULL,
+      temperatura REAL NOT NULL,
+      glicemie REAL NOT NULL,
+      timestamp TEXT NOT NULL
+    )
+  `);
+
+    //   db.run(`
+    //     CREATE TABLE IF NOT EXISTS conversations (
+    //       id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //       title TEXT NOT NULL,
+    //       createdAt TEXT NOT NULL
+    //     )
+    //   `);
+
+    //   db.run(`
+    //     CREATE TABLE IF NOT EXISTS messages (
+    //       id INTEGER PRIMARY KEY AUTOINCREMENT,
+    //       sender TEXT NOT NULL,
+    //       recipient TEXT NOT NULL,
+    //       content TEXT NOT NULL,
+    //       timestamp TEXT NOT NULL,
+    //       conversationId INTEGER NOT NULL,
+    //       FOREIGN KEY (conversationId) REFERENCES conversations(id)
+    //     )
+    //   `);
+});
 
 // const authenticateUser = (req, res, next) => {
 //   const token = req.headers.authorization;
@@ -138,37 +141,37 @@
 //   });
 // });
 
-// app.post('/api/medical-readings', (req, res) => {
-//   console.log('Received medical readings:', req.body); // Log the incoming medical readings
+app.post('/api/medical-readings', (req, res) => {
+    console.log('Received medical readings:', req.body); // Log the incoming medical readings
 
-//   const { tensiune, greutate, temperatura, glicemie } = req.body;
-//   const timestamp = new Date().toISOString();
+    const { tensiune, greutate, temperatura, glicemie } = req.body;
+    const timestamp = new Date().toISOString();
 
-//   db.run(
-//     `INSERT INTO medical_readings (tensiune, greutate, temperatura, glicemie, timestamp)
-//     VALUES (?, ?, ?, ?, ?)`,
-//     [tensiune, greutate, temperatura, glicemie, timestamp],
-//     (err) => {
-//       if (err) {
-//         console.error('Failed to store medical readings:', err.message);
-//         res.status(500).json('Internal server error');
-//       } else {
-//         res.status(200).json('Medical readings stored successfully');
-//       }
-//     }
-//   );
-// });
+    db.run(
+        `INSERT INTO medical_readings (tensiune, greutate, temperatura, glicemie, timestamp)
+    VALUES (?, ?, ?, ?, ?)`,
+        [tensiune, greutate, temperatura, glicemie, timestamp],
+        (err) => {
+            if (err) {
+                console.error('Failed to store medical readings:', err.message);
+                res.status(500).json('Internal server error');
+            } else {
+                res.status(200).json('Medical readings stored successfully');
+            }
+        }
+    );
+});
 
-// app.get('/api/medical-readings', (req, res) => {
-//   db.all('SELECT * FROM medical_readings', (err, rows) => {
-//     if (err) {
-//       console.error('Failed to fetch medical readings:', err.message);
-//       res.status(500).json('Internal server error');
-//     } else {
-//       res.status(200).json(rows);
-//     }
-//   });
-// });
+app.get('/api/medical-readings', (req, res) => {
+    db.all('SELECT * FROM medical_readings', (err, rows) => {
+        if (err) {
+            console.error('Failed to fetch medical readings:', err.message);
+            res.status(500).json('Internal server error');
+        } else {
+            res.status(200).json(rows);
+        }
+    });
+});
 
 // app.post('/api/messages', authenticateUser, (req, res) => {
 //   console.log('Received new message:', req.body); // Log the incoming message
@@ -208,12 +211,12 @@
 //   );
 // });
 
-// app.use((err, req, res, next) => {
-//   console.error(err);
-//   res.status(500).json('Internal server error');
-// });
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json('Internal server error');
+});
 
-// const PORT = process.env.PORT || 3000;
-// app.listen(PORT, () => {
-//   console.log(`Server listening on port ${PORT}`);
-// });
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+});
