@@ -55,7 +55,7 @@ function LoginPage({ navigation }) {
         <Text style={styles.buttonText}>Autentificare</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Inregistrare')}>
-        <Text style={styles.buttonText}>Inregistrare</Text>
+        <Text style={styles.buttonText}>Schimbare parola</Text>
       </TouchableOpacity>
     </View>
   );

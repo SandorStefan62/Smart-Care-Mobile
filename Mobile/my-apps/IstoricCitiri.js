@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 
@@ -6,15 +7,24 @@ function IstoricCitiri() {
   const [readings, setReadings] = useState([]);
   const [error, setError] = useState(null);
 
+
+
   useEffect(() => {
     fetchReadings();
   }, []);
 
   const fetchReadings = async () => {
+    const token = await AsyncStorage.getItem('token');
     try {
-      const response = await axios.get('http://192.168.133.117:3000/api/medical-readings');
+      const response = await fetch("https://server-ip2023.herokuapp.com/api/get-date-istorice", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
       if (response.status === 200) {
-        setReadings(response.data);
+        const data = await response.json();
+        setReadings(data.data);
         setError(null);
       } else {
         setError('Failed to fetch readings');
@@ -37,7 +47,7 @@ function IstoricCitiri() {
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
-
+  console.log(readings);
   const renderReadingItem = ({ item }) => {
     const formattedTimestamp = formatTimestamp(item.timestamp);
 
@@ -47,7 +57,7 @@ function IstoricCitiri() {
         <View style={styles.readingData}>
           <Text style={styles.readingText}>Tensiune: {item.tensiune}</Text>
           <Text style={styles.readingText}>Greutate: {item.greutate}</Text>
-          <Text style={styles.readingText}>Temperatura: {item.temperatura}</Text>
+          <Text style={styles.readingText}>Temperatura: {item.temperatura_corp}</Text>
           <Text style={styles.readingText}>Glicemie: {item.glicemie}</Text>
         </View>
       </TouchableOpacity>
@@ -63,7 +73,7 @@ function IstoricCitiri() {
         <FlatList
           data={readings}
           renderItem={renderReadingItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.id_date.toString()}
           style={styles.list}
         />
       )}

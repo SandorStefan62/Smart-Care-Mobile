@@ -11,12 +11,14 @@ function CitiriMedicale({ navigation }) {
   const [glicemie, setGlicemie] = useState('');
   const [idColectiePacient, setIdColectiePacient] = useState('');
   const [idPacient, setIdPacient] = useState('');
-  const [acc, setAcc] = useState('');
   const [dateIngrijitor, setDateIngrijitor] = useState({});
+  const [rol, setRol] = useState('');
 
-  // useEffect(() => {
-
-  // }, []);
+  const fetchIdPacient = async () => {
+    if (rol === 'Pacient') {
+      setIdPacient()
+    }
+  }
 
   const getIngrijitor = async () => {
     const token = await AsyncStorage.getItem('token');
@@ -29,8 +31,8 @@ function CitiriMedicale({ navigation }) {
       })
       const data = await response.json();
       //console.log(data);
-      setDateIngrijitor(data.data);
       setIdPacient(data.data.id_pacient);
+      //console.log(idPacient);
     } catch (error) {
       console.error("eroare ingrijitor");
     }
@@ -48,32 +50,26 @@ function CitiriMedicale({ navigation }) {
       if (response.ok) {
         console.log("OK");
         const data = await response.json();
-        //console.log(data);
-        if (data.data.id_pacient) {
+        setRol(data.data.rol);
+        if (data.data.rol === 'Pacient') {
           setIdPacient(data.data.id_pacient);
-          setAcc('Pacient');
         } else {
-
-          setAcc('Ingrijitor');
+          getIngrijitor();
         }
-
+        getIdColectie();
+        console.log(idPacient);
       } else {
-        console.log("NOK");
+        console.log("NOK verify");
       }
     } catch (error) {
       console.error(error);
     }
   }
 
-  verifyToken();
-
-  if (acc !== 'pacient') {
-    getIngrijitor();
-  }
-
   const getIdColectie = async () => {
     const token = await AsyncStorage.getItem('token');
     try {
+      console.log(idPacient);
       const response = await fetch(`https://server-ip2023.herokuapp.com/api/get-pacient-details/${idPacient}`, {
         method: "POST",
         headers: {
@@ -83,10 +79,12 @@ function CitiriMedicale({ navigation }) {
       if (response.ok) {
         console.log("OK");
         const data = await response.json();
-        console.log(data);
-        setIdColectiePacient(data.data.id_colectie);
+        //console.log(data.data);
+        if (data.data.id_colectie) {
+          setIdColectiePacient(data.data.id_colectie);
+        }
       } else {
-        console.log("NOK");
+        console.log("NOK idcolectie");
       }
     } catch (error) {
       console.error(error);
@@ -94,7 +92,7 @@ function CitiriMedicale({ navigation }) {
     }
   }
 
-  getIdColectie();
+  verifyToken();
 
   const handleSubmit = async () => {
 
@@ -141,17 +139,11 @@ function CitiriMedicale({ navigation }) {
         glicemie: parsedGlicemie,
         //timestamp: timestamp,
       };
-      const localData = {
-        tensiune: tensiune,
-        greutate: parsedGlicemie,
-        temperatura: parsedTemperatura,
-        glicemie: parsedGlicemie,
-        timestamp: timestamp
-      }
+      console.log(idColectiePacient);
       const response = await axios.put(`https://server-ip2023.herokuapp.com/api/update-date-colectate/${idColectiePacient}`, data, config);
-      const localResponse = await axios.post(`http://192.168.133.117:3000/api/medical-readings`, localData, config);
+      //const localResponse = await axios.post(`http://192.-.133.117:3000/api/medical-readings`, localData, config);
       console.log('Success:', response);
-      console.log('Success:', localResponse);
+      //console.log('Success:', localResponse);
       // You could also navigate to a different page or display a success message
 
     } catch (error) {
