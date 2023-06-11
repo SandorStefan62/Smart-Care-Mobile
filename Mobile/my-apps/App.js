@@ -6,6 +6,7 @@ import Home from "./Home"
 import CitiriMedicalePage from './CitiriMedicale';
 import MessagePage from './MessagePage';
 import IstoricCitiriPage from './IstoricCitiri';
+import ChangePassPage from './ChangePassPage';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,7 @@ export default function App() {
         <Stack.Screen name="CitiriMedicale" component={CitiriMedicalePage} options={{ headerShown: null }} />
         <Stack.Screen name="MessagePage" component={MessagePage} options={{ headerShown: null }} />
         <Stack.Screen name="IstoricCitiri" component={IstoricCitiriPage} options={{ headerShown: null }} />
+        <Stack.Screen name="ChangePassPage" component={ChangePassPage} options={{ headerShown: null }} />
         {/* add other screens here */}
       </Stack.Navigator>
     </NavigationContainer>
