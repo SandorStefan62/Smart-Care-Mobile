@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import axios from 'axios';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions } from 'react-native';
 
-function IstoricCitiri() {
+function IstoricCitiri({ navigation }) {
   const [readings, setReadings] = useState([]);
   const [error, setError] = useState(null);
 
@@ -53,7 +52,6 @@ function IstoricCitiri() {
 
     return (
       <TouchableOpacity style={styles.readingItem}>
-        <Text style={styles.date}>{formattedTimestamp}</Text>
         <View style={styles.readingData}>
           <Text style={styles.readingText}>Tensiune: {item.tensiune}</Text>
           <Text style={styles.readingText}>Greutate: {item.greutate}</Text>
@@ -67,6 +65,9 @@ function IstoricCitiri() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Istoric Citiri</Text>
+      <TouchableOpacity style={styles.button}>
+        <Text style={styles.buttonText} onPress={() => navigation.navigate('Home')}>Inapoi</Text>
+      </TouchableOpacity>
       {error ? (
         <Text style={styles.error}>{error}</Text>
       ) : (
@@ -80,6 +81,9 @@ function IstoricCitiri() {
     </View>
   );
 }
+
+const windowHeight = Dimensions.get("window").height;
+const windowWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
   container: {
@@ -118,6 +122,20 @@ const styles = StyleSheet.create({
   error: {
     color: '#FF0000',
     marginTop: 20,
+  },
+  button: {
+    backgroundColor: '#5C5EDD',
+    padding: 10,
+    borderRadius: 10,
+    marginVertical: 5,
+    width: windowWidth - 40,
+    maxWidth: 400,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
   },
 });
 

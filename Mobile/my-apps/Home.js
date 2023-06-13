@@ -7,6 +7,8 @@ import MessagePage from './MessagePage';
 import LoginPage from './LoginPage';
 import IstoricCitiriPage from './IstoricCitiri';
 import CitiriMedicalePage from './CitiriMedicale';
+import AlarmPage from './AlarmPage';
+import RecomandariPage from './RecomandariPage';
 
 const Stack = createStackNavigator();
 
@@ -14,8 +16,9 @@ const HomePage = ({ navigation }) => {
   const tableData = [
     { key: 'Citiri medicale', component: CitiriMedicalePage },
     { key: 'Istoric citiri', component: IstoricCitiriPage },
-    { key: 'Mesaje', component: MessagePage },
-    { key: 'Log Out', component: LoginPage }
+    { key: 'Recomandari', component: RecomandariPage },
+    { key: 'Alarm', component: AlarmPage },
+    { key: 'Log Out', component: LoginPage },
   ];
 
   const logout = async () => {
